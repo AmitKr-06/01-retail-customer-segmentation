@@ -1,0 +1,41 @@
+# Environments
+venv/
+env/
+.venv/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (don't push large/raw data to GitHub)
+data/raw/
+data/processed/
+data/external/
+
+# Models
+models/*.pkl
+models/*.joblib
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+docker/*.log
+
+# Reports
+reports/figures/*.png
