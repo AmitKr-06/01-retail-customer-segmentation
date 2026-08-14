@@ -25,6 +25,7 @@ models/*.joblib
 # Logs
 logs/
 *.log
+artifacts/
 
 # OS files
 .DS_Store
