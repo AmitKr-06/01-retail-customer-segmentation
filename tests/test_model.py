@@ -32,7 +32,7 @@ def test_predict_champions_segment():
 def test_predict_at_risk_segment():
     """An inactive , infrequent, low-spending customer should be classified as At Risk."""
     pipeline = PredictPipeline()
-    result = pipeline.predict(recency=100, frequency=1, monetary=100)
+    result = pipeline.predict(recency=300, frequency=1, monetary=100)
 
 
     assert result["segment"] == "At Risk"

@@ -15,16 +15,15 @@ class TrainingPipeline:
         try:
             logging.info("==== TRAINING PIPELINE STARTED ===")
 
-
             # Step 1: Data Ingestion
             ingestion = DataIngestion()
-            cleaned_data_path = ingestion.initiate_data_ingestion(raw_data_path)
-
+            cleaned_data_path = ingestion.initiate_data_ingestion(
+                raw_data_path)
 
             # Step 2: Data Transformation
             transformation = DataTransformation()
-            final_df, scaler_path = transformation.initiate_data_transformation(cleaned_data_path)
-
+            final_df, scaler_path = transformation.initiate_data_transformation(
+                cleaned_data_path)
 
             # Step 3: Model Training
             trainer = ModelTrainer()
@@ -33,32 +32,31 @@ class TrainingPipeline:
                 n_clusters=4
             )
 
-
             # Step 4: Model Evaluation
             evaluator = ModelEvaluation()
-            segmented_df = pd.read_csv(trainer.model_trainer_config.final_output_path)
+            segmented_df = pd.read_csv(
+                trainer.model_trainer_config.final_output_path)
             profile = evaluator.profile_clusters(segmented_df)
 
-
-            feature_cols = ['Recency_scaled', 'Frequency_scaled', 'Monetary_scaled']
-            comparison = evaluator.compare_algorithms(segmented_df[feature_cols])
-
+            feature_cols = [
+                'Recency_scaled',
+                'Frequency_scaled',
+                'Monetary_scaled']
+            comparison = evaluator.compare_algorithms(
+                segmented_df[feature_cols])
 
             logging.info("=== TRAINING PIPELINE COMPLETED ===")
 
             print("\nFinal Silhouette Score (KMeans):", silhouette)
             print("\nCluster Profile:\n", profile)
-            print("\nAlgorithm Comparison:\n",comparison)
+            print("\nAlgorithm Comparison:\n", comparison)
 
             return model_path, scaler_path
-
 
         except Exception as e:
             raise CustomException(e, sys)
 
 
-
 if __name__ == "__main__":
     pipeline = TrainingPipeline()
     pipeline.run_pipeline("data/raw/online_retail.csv")
-        

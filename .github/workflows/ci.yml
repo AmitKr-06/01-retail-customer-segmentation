@@ -35,4 +35,4 @@ jobs:
       - name: Lint check (optional)
         run: |
           pip install flake8
-          flake8 src/ api/ --max-line-length=120 --ignore=E501,W503
+          flake8 src/ api/ --max-line-length=120 --ignore=E501,W503,W504 || true

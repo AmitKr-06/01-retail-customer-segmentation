@@ -12,6 +12,7 @@ from src.exception import CustomException
 from src.logger import logging
 from src.utils import save_object
 
+
 @dataclass
 class ModelTrainerConfig:
     trained_model_path: str = os.path.join('artifacts', 'kmeans_model.pkl')
@@ -22,8 +23,7 @@ class ModelTrainer:
     def __init__(self):
         self.model_trainer_config = ModelTrainerConfig()
 
-
-    def find_optimal_k(self, X, k_range = range(2, 11)):
+    def find_optimal_k(self, X, k_range=range(2, 11)):
         """Runs elbow method + silhouette score across a range of K values."""
 
         try:
@@ -44,43 +44,49 @@ class ModelTrainer:
         except Exception as e:
             raise CustomException(e, sys)
 
-
-    def initiate_model_training(self, transformed_data_path: str, n_clusters: int = 4):
+    def initiate_model_training(
+            self,
+            transformed_data_path: str,
+            n_clusters: int = 4):
         try:
             df = pd.read_csv(transformed_data_path)
             logging.info("Loaded transformed RFM data for model training")
 
-
-            feature_cols = ['Recency_scaled', 'Frequency_scaled', 'Monetary_scaled']
+            feature_cols = [
+                'Recency_scaled',
+                'Frequency_scaled',
+                'Monetary_scaled']
             X = df[feature_cols]
-
-
 
             # run elbow/silhouette check (mainly for experimentation/logs)
             self.find_optimal_k(X)
 
-
             # Train model with chosen K
-            kmeans_final  = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+            kmeans_final = KMeans(
+                n_clusters=n_clusters,
+                random_state=42,
+                n_init=10)
             df['Cluster'] = kmeans_final.fit_predict(X)
 
             final_score = silhouette_score(X, df['Cluster'])
-            logging.info(f"Final KMeans (K={n_clusters}) silhouette score: {final_score}")
-
+            logging.info(
+                f"Final KMeans (K={n_clusters}) silhouette score: {final_score}")
 
             # Save model
-            save_object(self.model_trainer_config.trained_model_path, kmeans_final)
-
+            save_object(
+                self.model_trainer_config.trained_model_path,
+                kmeans_final)
 
             # Save final segmented customer data
-            os.makedirs(os.path.dirname(self.model_trainer_config.final_output_path), exist_ok=True)
+            os.makedirs(
+                os.path.dirname(
+                    self.model_trainer_config.final_output_path),
+                exist_ok=True)
             df.to_csv(self.model_trainer_config.final_output_path, index=False)
 
             logging.info("Model training completed successfully")
 
             return self.model_trainer_config.trained_model_path, final_score
 
-
         except Exception as e:
             raise CustomException(e, sys)
-

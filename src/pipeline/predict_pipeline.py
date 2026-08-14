@@ -17,22 +17,30 @@ class PredictPipeline:
         """Dynamically determines which cluster number corresponds to which segment,
         based on the actual trained model's cluster centers (not hardcoded numbers)."""
         df = pd.read_csv(self.segments_data_path)
-        profile = df.groupby('Cluster')[['Recency', 'Frequency', 'Monetary']].mean()
+        profile = df.groupby('Cluster')[
+            ['Recency', 'Frequency', 'Monetary']].mean()
 
-        # Rank clusters: low Recency + high Frequency + high Monetary = better segment
+        # Rank clusters: low Recency + high Frequency + high Monetary = better
+        # segment
         profile['score'] = (
             profile['Frequency'].rank() +
             profile['Monetary'].rank() -
             profile['Recency'].rank()
         )
 
-        sorted_clusters = profile.sort_values('score', ascending=False).index.tolist()
+        sorted_clusters = profile.sort_values(
+            'score', ascending=False).index.tolist()
 
         labels = ["Champions", "Loyal", "New/Promising", "At Risk"]
-        segment_map = {cluster: labels[i] for i, cluster in enumerate(sorted_clusters)}
+        segment_map = {cluster: labels[i]
+                       for i, cluster in enumerate(sorted_clusters)}
         return segment_map
 
-    def predict(self, recency: float, frequency: float, monetary: float) -> dict:
+    def predict(
+            self,
+            recency: float,
+            frequency: float,
+            monetary: float) -> dict:
         try:
             model = load_object(self.model_path)
             scaler = load_object(self.scaler_path)
@@ -50,13 +58,17 @@ class PredictPipeline:
 
             scaled_input = scaler.transform(input_df)
             scaled_input_df = pd.DataFrame(
-                scaled_input, columns=['Recency_scaled', 'Frequency_scaled', 'Monetary_scaled']
-            )
+                scaled_input,
+                columns=[
+                    'Recency_scaled',
+                    'Frequency_scaled',
+                    'Monetary_scaled'])
 
             cluster = model.predict(scaled_input_df)[0]
             segment_name = segment_map.get(int(cluster), "Unknown")
 
-            logging.info(f"Prediction made: Cluster={cluster}, Segment={segment_name}")
+            logging.info(
+                f"Prediction made: Cluster={cluster}, Segment={segment_name}")
 
             return {
                 "cluster": int(cluster),
