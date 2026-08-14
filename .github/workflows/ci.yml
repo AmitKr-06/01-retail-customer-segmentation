@@ -24,6 +24,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Run training pipeline (generates model artifacts)
+        run: |
+          python -m src.pipeline.training_pipeline
+
       - name: Run tests
         run: |
           pytest tests/ -v
